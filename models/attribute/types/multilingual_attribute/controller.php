@@ -612,7 +612,7 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 	public function getDisplayValue() {
 		$v = $this->getLocalizedValueFor(Localization::activeLocale());
 		if(strlen($v)) {
-			switch($this->controller->akType) {
+			switch($this->controller->getType()) {
 				case MultilingualAttributeAttributeTypeController::VALUETYPE_HTML:
 					return Loader::helper('content')->translateFrom($v);
 				case MultilingualAttributeAttributeTypeController::VALUETYPE_TEXTAREA:
