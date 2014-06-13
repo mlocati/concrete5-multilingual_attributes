@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<schema version="0.3">
+	<table name="atMultilingualAttributeOptions">
+		<field name="akID" type="I"> <key /> <unsigned /> </field>
+		<field name="akType" type="C" size="30"> <notnull  /> <default value="text" /> </field>
+		<field name="akAssociatedAttribute" type="C" size="255"> <notnull  /> <default value="" /> </field>
+	</table> 
+	<table name="atMultilingualAttribute">
+		<field name="avID" type="I"> <key /> <unsigned /> </field>
+		<field name="json" type="X2" > </field>
+	</table>
+</schema>
