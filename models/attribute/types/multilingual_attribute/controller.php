@@ -124,7 +124,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 
 	// Stuff related to create/edit/delete/duplicate an attribute value
 	
-	/** Prepare the data for the form used when editing an attribute value */
+	/** Prepare the data for the form used when editing an attribute value or during search */
 	public function form() {
 		$attributeValue = $this->getAttributeValue();
 		$value = is_object($attributeValue) ? $attributeValue->getValue() : MultilingualAttributeAttributeTypeValue::getEmpty($this, null);
@@ -283,10 +283,43 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 		foreach(self::getAvailableLanguages(true) as $localeID) {
 			$localizedValue = $value->getLocalizedValueFor($localeID);
 			if(strlen($localizedValue)) {
-				$valuesArray[] = $localizedValue;
+				if($this->getType() === self::VALUETYPE_HTML) {
+					$localizedValue = trim(strip_tags($localizedValue));
+				}
+				if(strlen($localizedValue)) {
+					$valuesArray[] = "_StartOf_$localeID::$localizedValue::_EndOf_$localeID";
+				}
 			}
 		}
 		return array('searchtext' => implode("\n", $valuesArray));
+	}
+
+	/** Renders the search form */
+	public function search() {
+		echo $this->form();
+		$this->set('search', true);
+		$this->getView()->render('search_form');
+	}
+
+	/** Apply the filter specified in the search form
+	* @param unknown $list
+	* @return unknown
+	*/
+	public function searchForm($list) {
+		$localeID = $this->request('searchlocale');
+		if(!array_key_exists($localeID, self::getAvailableLanguages())) {
+			$localeID = '';
+		}
+		$text = $this->request('searchtext');
+		$text = is_string($text) ? trim($text) : '';
+		if(strlen($localeID) || strlen($text)) {
+			$q = strlen($text) ? "%$text%" : '%';
+			if(strlen($localeID)) {
+				$q = "%_StartOf_$localeID::$q::_EndOf_$localeID%";
+			}
+			$list->filterByAttribute(array('searchtext' => $this->attributeKey->getAttributeKeyHandle()), $q, 'like');
+		}
+		return $list;
 	}
 
 	/** Returns the query chunk to search for text
@@ -297,26 +330,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 		return '(ak_' . $this->getAttributeKey()->getAttributeKeyHandle() . '_searchtext like ' . Loader::db()->quote('%' . $keywords . '%') . ')';
 	}
 
-	public function searchForm($list) {
-		$search = $this->request('searchtext');
-		if(is_string($search) && strlen($search)) {
-			$list->filterByAttribute(array('searchtext' => $this->attributeKey->getAttributeKeyHandle()), '%' . $search . '%', 'like');
-		}
-		return $list;
-	}
-
-	/*
-	public function search() {
-		
-		echo $this->form();
-		$v = $this->getView();
-		$this->set('search', true);
-		$v->render('form');
-	}
-	*/
-
 	// 
-
 
 	protected function loadOptions($forceReload = false) {
 		static $loaded = false;
