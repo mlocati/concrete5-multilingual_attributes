@@ -52,6 +52,15 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 		return $this->akAssociatedAttribute;
 	}
 
+	// General type-related stuff
+
+	/** Delete this attribute type */
+	public function deleteType() {
+		$db = Loader::db();
+		$db->Execute('drop table if exists atMultilingualAttributeOptions');
+		$db->Execute('drop table if exists atMultilingualAttribute');
+	}
+
 	// Stuff related to create/edit/delete/duplicate an attribute key
 
 	/** Prepare the data for the form used when defining a new attribute and when editing an existing attribute */
