@@ -256,16 +256,6 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 		return $v ? $v : MultilingualAttributeAttributeTypeValue::getEmpty($this, $associatedObject);
 	}
 
-	public function getDisplaySanitizedValue() {
-		return $this->getValue()->toHTML();
-	}
-	public function getDisplayValue() {
-		return $this->getValue()->toHTML();
-	}
-	public function getUserValue() {
-		return $this->getValue()->getDisplayValue();
-	}
-
 	// Search-related stuff
 
 	/** The definition of the search field
@@ -336,24 +326,27 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 		return '(ak_' . $this->getAttributeKey()->getAttributeKeyHandle() . '_searchtext like ' . Loader::db()->quote('%' . $keywords . '%') . ')';
 	}
 
-	// 
+	// Value-display related functions
 
-	protected function loadOptions($forceReload = false) {
-		static $loaded = false;
-		if((!$loaded) || $forceReload) {
-			$this->akType = self::VALUETYPE_TEXT;
-			$this->akAssociatedAttribute = '';
-			$ak = $this->getAttributeKey();
-			if(is_object($ak) && (!$ak->isError())) {
-				$row = Loader::db()->GetRow('select * from atMultilingualAttributeOptions where akID = ?', $ak->getAttributeKeyID());
-				if(array_key_exists($row['akType'], self::getSelectableTypes())) {
-					$this->akType = $row['akType'];
-				}
-				if(is_string($row['akAssociatedAttribute'])) {
-					$this->akAssociatedAttribute = $row['akAssociatedAttribute'];
-				}
-			}
-		}
+	/** Returns the representation of this attribute (all languages).
+	* @return string
+	*/
+	public function getDisplaySanitizedValue() {
+		return $this->getValue()->toHTML();
+	}
+
+	/** Returns the representation of this attribute (all languages).
+	* @return string
+	*/
+	public function getDisplayValue() {
+		return $this->getDisplaySanitizedValue();
+	}
+
+	/** Returns the final value to be shown to users (only the current user language).
+	* @return string
+	*/
+	public function getUserValue() {
+		return $this->getValue()->getDisplayValue();
 	}
 
 	// Import-export keys
@@ -440,6 +433,27 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 	}
 
 	// Helper functions
+
+	/** Load the attirbute-key specific options
+	* @param bool $forceReload Reload from DB also when we already loaded the data?
+	*/
+	protected function loadOptions($forceReload = false) {
+		static $loaded = false;
+		if((!$loaded) || $forceReload) {
+			$this->akType = self::VALUETYPE_TEXT;
+			$this->akAssociatedAttribute = '';
+			$ak = $this->getAttributeKey();
+			if(is_object($ak) && (!$ak->isError())) {
+				$row = Loader::db()->GetRow('select * from atMultilingualAttributeOptions where akID = ?', $ak->getAttributeKeyID());
+				if(array_key_exists($row['akType'], self::getSelectableTypes())) {
+					$this->akType = $row['akType'];
+				}
+				if(is_string($row['akAssociatedAttribute'])) {
+					$this->akAssociatedAttribute = $row['akAssociatedAttribute'];
+				}
+			}
+		}
+	}
 
 	/** Returns the available field types
 	* @param bool $onlyKeys = false Set to true to retrieve only the type IDs; set to false (default) to retrieve a list of id - name
@@ -592,7 +606,10 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 		return (array_key_exists($localeID, $this->dictionary) && is_string($this->dictionary[$localeID])) ? $this->dictionary[$localeID] : '';
 	}
 
-	public function getFinalValue() {
+	/**
+	* @return string
+	*/
+	public function getDisplayValue() {
 		$v = $this->getLocalizedValueFor(Localization::activeLocale());
 		if(strlen($v)) {
 			switch($this->controller->akType) {
@@ -628,7 +645,7 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 				}
 			}
 			if(is_object($object) && strlen($fallbackAttribute)) {
-				$v = $fv->getAttribute($fallbackAttribute, 'display');
+				$v = $object->getAttribute($fallbackAttribute, 'display');
 			}
 		}
 		return is_string($v) ? $v : '';
