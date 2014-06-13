@@ -1,4 +1,4 @@
-concrete5-multilingual_attribute
+concrete5 Multilingual attribute
 ================================
 
-Multilingual attribute package for concrete5
+Work in progress
