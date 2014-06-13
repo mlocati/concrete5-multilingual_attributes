@@ -43,8 +43,8 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 	protected $akAssociatedAttribute;
 
 	/** Return the handle of the fallback attribute
-	 * @var string
-	 */
+	* @var string
+	*/
 	public function getAssociatedAttribute() {
 		if(!isset($this->akAssociatedAttribute)) {
 			$this->loadOptions();
@@ -52,7 +52,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 		return $this->akAssociatedAttribute;
 	}
 
-	// General type-related stuff
+	// Stuff related to create/delete the attribute type
 
 	/** Delete this attribute type */
 	public function deleteType() {
@@ -123,7 +123,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 	}
 
 	// Stuff related to create/edit/delete/duplicate an attribute value
-	
+
 	/** Prepare the data for the form used when editing an attribute value or during search */
 	public function form() {
 		$attributeValue = $this->getAttributeValue();
@@ -164,12 +164,13 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 	public function validateForm($data) {
 		return true;
 	}
-	
+
 	/** Save the new attribute values inserted in the edit form
 	* @param array $data The new values
 	*/
 	public function saveForm($data) {
 		$localizedValues = array();
+		$ch = null;
 		foreach(self::getAvailableLanguages(true) as $localeID) {
 			$localizedValue = '';
 			if(array_key_exists($localeID, $data) && is_string($data[$localeID])) {
@@ -254,7 +255,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 		$v = MultilingualAttributeAttributeTypeValue::getByID($this->getAttributeValueID(), $this, $associatedObject);
 		return $v ? $v : MultilingualAttributeAttributeTypeValue::getEmpty($this, $associatedObject);
 	}
-	
+
 	public function getDisplaySanitizedValue() {
 		return $this->getValue()->toHTML();
 	}
@@ -264,7 +265,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 	public function getUserValue() {
 		return $this->getValue()->getDisplayValue();
 	}
-	
+
 	// Search-related stuff
 
 	/** The definition of the search field
@@ -280,11 +281,16 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 	public function getSearchIndexValue() {
 		$valuesArray = array();
 		$value = $this->getValue();
+		$ch = null;
 		foreach(self::getAvailableLanguages(true) as $localeID) {
 			$localizedValue = $value->getLocalizedValueFor($localeID);
 			if(strlen($localizedValue)) {
 				if($this->getType() === self::VALUETYPE_HTML) {
-					$localizedValue = trim(strip_tags($localizedValue));
+					if(is_null($ch)) {
+						$ch = Loader::helper('content');
+					}
+					/* @var $ch ContentHelper */
+					$localizedValue = trim(strip_tags($ch->translateFrom($localizedValue)));
 				}
 				if(strlen($localizedValue)) {
 					$valuesArray[] = "_StartOf_$localeID::$localizedValue::_EndOf_$localeID";
@@ -341,7 +347,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 			if(is_object($ak) && (!$ak->isError())) {
 				$row = Loader::db()->GetRow('select * from atMultilingualAttributeOptions where akID = ?', $ak->getAttributeKeyID());
 				if(array_key_exists($row['akType'], self::getSelectableTypes())) {
-					$this->akType =  $row['akType'];
+					$this->akType = $row['akType'];
 				}
 				if(is_string($row['akAssociatedAttribute'])) {
 					$this->akAssociatedAttribute = $row['akAssociatedAttribute'];
@@ -377,7 +383,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 
 	// Import-export values
 
-	/** Export the attribute value 
+	/** Export the attribute value
 	* @param SimpleXMLElement $attributeKeyNode The XML node to add the value to
 	*/
 	public function exportValue($attributeKeyNode) {
@@ -434,11 +440,11 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 	}
 
 	// Helper functions
-	
+
 	/** Returns the available field types
-	 * @param bool $onlyKeys = false Set to true to retrieve only the type IDs; set to false (default) to retrieve a list of id - name
-	 * @return array
-	 */
+	* @param bool $onlyKeys = false Set to true to retrieve only the type IDs; set to false (default) to retrieve a list of id - name
+	* @return array
+	*/
 	public static function getSelectableTypes($onlyKeys = false) {
 		static $types;
 		if(!isset($types)) {
@@ -456,11 +462,11 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 			return $types;
 		}
 	}
-	
+
 	/** Returns the currently available locales
-	 * @param bool $onlyKeys = false Set to true to retrieve only the locale IDs; set to false (default) to retrieve a list of id - name
-	 * @return array
-	 */
+	* @param bool $onlyKeys = false Set to true to retrieve only the locale IDs; set to false (default) to retrieve a list of id - name
+	* @return array
+	*/
 	public static function getAvailableLanguages($onlyKeys = false) {
 		static $langs;
 		if(!isset($langs)) {
@@ -475,12 +481,12 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 			return $langs;
 		}
 	}
-	
+
 	/** Returns the flag associated to a locale (if found)
-	 * @param string $localeID The ID of the locale
-	 * @param bool $buildHtml Set to true to retrieve the HTML code for the flag; set to false to retrieve only the relative URL of the flag
-	 * @return string Returns an empty string if the flag is not found; the flag URL or HTML if found
-	 */
+	* @param string $localeID The ID of the locale
+	* @param bool $buildHtml Set to true to retrieve the HTML code for the flag; set to false to retrieve only the relative URL of the flag
+	* @return string Returns an empty string if the flag is not found; the flag URL or HTML if found
+	*/
 	public static function getLocaleFlag($localeID, $buildHtml) {
 		static $hasMultilingual;
 		if(!isset($hasMultilingual)) {
@@ -539,12 +545,11 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 	protected $dictionary;
 
 	/** Initializes the instance
-	 * 
 	* @param int|null $avID The attribute value ID
 	* @param MultilingualAttributeAttributeTypeController $controller The attribute controller
 	* @param string $json The JSON representation of the array with localeID-values
 	* @param Collection|File|UserInfo|null $associatedObject The object associated to this attribute
-	 */
+	*/
 	protected function __construct($avID, $controller, $json, $associatedObject) {
 		$this->avID = $avID;
 		$this->controller = $controller;
@@ -582,11 +587,11 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 	/** Return the localized value as stored in DB
 	* @param string $localeID The locale for which you want the value
 	* @return string
-	 */
+	*/
 	public function getLocalizedValueFor($localeID) {
 		return (array_key_exists($localeID, $this->dictionary) && is_string($this->dictionary[$localeID])) ? $this->dictionary[$localeID] : '';
 	}
-	
+
 	public function getFinalValue() {
 		$v = $this->getLocalizedValueFor(Localization::activeLocale());
 		if(strlen($v)) {
