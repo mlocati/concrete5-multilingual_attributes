@@ -1,7 +1,7 @@
 msgid ""
 msgstr "Project-Id-Version: multilingual_attributes 0.9.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-16 08:08+0000\n"
+"POT-Creation-Date: 2014-06-16 09:06+0000\n"
 "MIME-Version: 1.0\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -42,35 +42,39 @@ msgstr ""
 msgid "Rich Text"
 msgstr ""
 
-#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/search_form.php:5
+#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/search_form.php:3
+msgid "all languages"
+msgstr ""
+
+#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/search_form.php:6
 #, php-format
 msgctxt "Only for language"
 msgid "Only for %s"
 msgstr ""
 
-#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/search_form.php:9
+#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/search_form.php:10
 msgid "Enter search text"
 msgstr ""
 
-#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:31
+#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:32
 msgctxt "No attribute"
 msgid "none"
 msgstr ""
 
-#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:33
+#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:34
 #, php-format
 msgctxt "%s is a language"
 msgid "Fallback to %s"
 msgstr ""
 
-#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:43
+#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:44
 msgid "Attribute options"
 msgstr ""
 
-#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:45
+#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:46
 msgid "Type"
 msgstr ""
 
-#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:57
+#: packages/multilingual_attributes/models/attribute/types/multilingual_attribute/type_form.php:58
 msgid "When not set for a language, use the value of:"
 msgstr ""
