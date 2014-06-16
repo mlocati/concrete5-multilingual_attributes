@@ -35,6 +35,14 @@ function couple($textarea, realID) {
 		me.mce.onChange.add(function(ed, l) {
 			me.$final.val(mce.getContent());
 		});
+		me.mce.onRemove.add(function(ed) {
+			$.each(couple.all, function(i, c) {
+				if(c === me) {
+					couple.all.splice(i, 1);
+					return false;
+				}
+			});
+		});
 	});
 }
 couple.all = [];
