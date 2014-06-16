@@ -1,3 +1,5 @@
+/* jshint unused:vars, undef:true, browser:true, jquery:true */
+/* global tinyMCE */
 
 if(!window.multilingual_attribute_mceWorkaround) { (function(window, $) {
 
@@ -9,14 +11,15 @@ function couple($textarea, realID) {
 	var id = $textarea.attr('id');
 	couple.all.push(me);
 	var lookForMCE = function(cb) {
-		debugger;
 		var mce = null;
 		if(window.tinyMCE) {
 			$.each(tinyMCE.get(), function() {
-				var $form = $(this.contentAreaContainer).closest('form');
-				if($form.length && ($form[0] === form) && (this.id === id)) {
-					mce = this;
-					return false;
+				if(this.initialized) {
+					var $form = $(this.contentAreaContainer).closest('form');
+					if($form.length && ($form[0] === form) && (this.id === id)) {
+						mce = this;
+						return false;
+					}
 				}
 			});
 		}
@@ -30,7 +33,7 @@ function couple($textarea, realID) {
 	lookForMCE(function(mce) {
 		me.mce = mce;
 		me.mce.onChange.add(function(ed, l) {
-			me.$final.val(l.content);
+			me.$final.val(mce.getContent());
 		});
 	});
 }

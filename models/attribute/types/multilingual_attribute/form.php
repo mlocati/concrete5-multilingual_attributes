@@ -10,6 +10,7 @@ $jh = Loader::helper('json');
 
 if($akType === MultilingualAttributeAttributeTypeController::VALUETYPE_HTML) {
 	?><script src="<?php echo $this->controller->attributeType->getAttributeTypeFileURL('mce_workaround.js'); ?>"></script><?php
+	Loader::element('editor_config');
 }
 ?><fieldset>
 	<?php
@@ -23,7 +24,6 @@ if($akType === MultilingualAttributeAttributeTypeController::VALUETYPE_HTML) {
 					echo $fh->textarea($fieldID, $localizedValues[$localeID]);
 					break;
 				case MultilingualAttributeAttributeTypeController::VALUETYPE_HTML:
-					Loader::element('editor_config');
 					$mceFieldID = str_replace(']', '_', str_replace('[', '_', $fieldID));
 					echo Loader::helper('form')->textarea($mceFieldID, Loader::helper('content')->translateFromEditMode($localizedValues[$localeID]), array('class' => 'ccm-advanced-editor', 'data-original-field-id' => $fieldID));
 					?><script type="text/javascript">
