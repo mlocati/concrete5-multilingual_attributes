@@ -328,24 +328,17 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 
 	// Value-display related functions
 
-	/** Returns the representation of this attribute (all languages).
+	/** Returns the final value to be shown to users.
 	* @return string
 	*/
 	public function getDisplaySanitizedValue() {
-		return $this->getValue()->toHTML();
+		return $this->getDisplayValue();
 	}
 
-	/** Returns the representation of this attribute (all languages).
+	/** Returns the final value to be shown to users.
 	* @return string
 	*/
 	public function getDisplayValue() {
-		return $this->getDisplaySanitizedValue();
-	}
-
-	/** Returns the final value to be shown to users (only the current user language).
-	* @return string
-	*/
-	public function getUserValue() {
 		return $this->getValue()->getDisplayValue();
 	}
 
@@ -606,7 +599,7 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 		return (array_key_exists($localeID, $this->dictionary) && is_string($this->dictionary[$localeID])) ? $this->dictionary[$localeID] : '';
 	}
 
-	/**
+	/** Return all the locale variants of the attribute
 	* @return string
 	*/
 	public function getDisplayValue() {
@@ -654,21 +647,7 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 	/**
 	* @return string
 	*/
-	public function __toString() {
-		$l = array();
-		foreach(MultilingualAttributeAttributeTypeController::getAvailableLanguages() as $localeID => $localeName) {
-			$v = $this->getLocalizedValueFor($localeID);
-			if(strlen($v)) {
-				$l[] = "$localeName: $v";
-			}
-		}
-		return implode("\n", $l);
-	}
-
-	/**
-	* @return string
-	*/
-	public function toHTML() {
+	public function getLocaleVariants() {
 		$allHaveFlags = true;
 		$l = array();
 		foreach(MultilingualAttributeAttributeTypeController::getAvailableLanguages() as $localeID => $localeName) {
@@ -704,4 +683,10 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 		return implode('<br />', $m);
 	}
 
+	/**
+	* @return string
+	*/
+	public function __toString() {
+		return $this->getDisplayValue();
+	}
 }
