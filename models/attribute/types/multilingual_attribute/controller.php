@@ -65,6 +65,7 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 
 	/** Prepare the data for the form used when defining a new attribute and when editing an existing attribute */
 	public function type_form() {
+		$this->set('locales', self::getAvailableLanguages());
 		$this->set('selectableTypes', self::getSelectableTypes());
 		$this->set('akType', $this->getType());
 		$this->set('akAssociatedAttribute', $this->getAssociatedAttribute());
@@ -615,6 +616,20 @@ class MultilingualAttributeAttributeTypeValue extends Object {
 			}
 		}
 		$fallbackAttribute = $this->controller->getAssociatedAttribute();
+		if(preg_match('/^\\*(.+)\\*$/', $fallbackAttribute, $m) && array_key_exists($m[1], MultilingualAttributeAttributeTypeController::getAvailableLanguages())) {
+			$v = $this->getLocalizedValueFor($m[1]);
+			if(!strlen($v)) {
+				return '';
+			}
+			switch($this->controller->getType()) {
+				case MultilingualAttributeAttributeTypeController::VALUETYPE_HTML:
+					return Loader::helper('content')->translateFrom($v);
+				case MultilingualAttributeAttributeTypeController::VALUETYPE_TEXTAREA:
+					return nl2br(h($v));
+				default:
+					return h($v);
+			}
+		}
 		if(is_object($this->associatedObject) && strlen($fallbackAttribute)) {
 			$object = $this->associatedObject;
 			if(is_a($object, 'File')) {

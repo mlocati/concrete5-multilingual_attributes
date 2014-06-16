@@ -29,6 +29,9 @@ if(isset($category)) {
 }
 natcasesort($associableAttributes);
 $associableAttributes = array_merge(array('' => tc('No attribute', 'none')), $associableAttributes);
+foreach($locales as $localeID => $localeName) {
+	$associableAttributes["*$localeID*"] = tc('%s is a language', 'Fallback to %s', $localeName);
+}
 if(strlen($akAssociatedAttribute) && (!array_key_exists($akAssociatedAttribute, $associableAttributes))) {
 	$akAssociatedAttribute = '';
 }
