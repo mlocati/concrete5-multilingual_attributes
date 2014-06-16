@@ -1,3 +1,4 @@
+<?php defined('C5_EXECUTE') or die('Access denied.');?>
 <select name="<?php echo $this->field('searchlocale'); ?>">
 	<option value="*">all languages</option>
 	<?php

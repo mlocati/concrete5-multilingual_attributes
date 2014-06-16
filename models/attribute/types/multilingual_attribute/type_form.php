@@ -1,4 +1,5 @@
-<?php
+<?php defined('C5_EXECUTE') or die('Access denied.');
+
 $fh = Loader::helper('form');
 /* @var $fh FormHelper */
 
