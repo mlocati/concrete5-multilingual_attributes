@@ -1,3 +1,6 @@
+# 0.9.2 (2014-06-18)
+  - Only enable other attribute fallback only for core entities (pages, files, users)
+
 # 0.9.1 (2014-06-17)
   - Fixed a translatable string
   - Fixed minimum PHP version in composer.json

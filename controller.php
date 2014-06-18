@@ -4,7 +4,7 @@ class MultilingualAttributesPackage extends Package {
 
 	protected $pkgHandle = 'multilingual_attributes';
 	protected $appVersionRequired = '5.6.3';
-	protected $pkgVersion = '0.9.1';
+	protected $pkgVersion = '0.9.2';
 
 	public function getPackageName() {
 		return t('Multilingual attributes');
