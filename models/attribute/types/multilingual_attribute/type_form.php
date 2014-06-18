@@ -5,27 +5,33 @@ $fh = Loader::helper('form');
 
 $associableAttributes = array();
 
-if(isset($category)) {
+if(isset($category) && is_object($category)) {
 	/* @var $category AttributeKeyCategory */
 	if(array_key_exists($category->getAttributeKeyCategoryHandle(), $specialAssociableAttributes)) {
 		$associableAttributes = $specialAssociableAttributes[$category->getAttributeKeyCategoryHandle()];
 	}
-	foreach(AttributeKey::getList($category->getAttributeKeyCategoryHandle()) as $otherAttribute) {
-		/* @var $otherAttribute AttributeKey */
-		switch($otherAttribute->getAttributeKeyType()->getAttributeTypeHandle()) {
-			case 'boolean':
-			case 'date_time':
-			case 'image_file':
-			case 'number':
-			case 'rating':
-			case 'select':
-			case 'address':
-			case 'multilingual_attribute':
-				break;
-			default:
-				$associableAttributes[$otherAttribute->getAttributeKeyHandle()] = $otherAttribute->getAttributeKeyDisplayName();
-				break;
-		}
+	switch($category->getAttributeKeyCategoryHandle()) {
+		case 'file':
+		case 'collection':
+		case 'user':
+			foreach(AttributeKey::getList($category->getAttributeKeyCategoryHandle()) as $otherAttribute) {
+				/* @var $otherAttribute AttributeKey */
+				switch($otherAttribute->getAttributeKeyType()->getAttributeTypeHandle()) {
+					case 'boolean':
+					case 'date_time':
+					case 'image_file':
+					case 'number':
+					case 'rating':
+					case 'select':
+					case 'address':
+					case 'multilingual_attribute':
+						break;
+					default:
+						$associableAttributes[$otherAttribute->getAttributeKeyHandle()] = $otherAttribute->getAttributeKeyDisplayName();
+						break;
+				}
+			}
+			break;
 	}
 }
 natcasesort($associableAttributes);
