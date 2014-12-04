@@ -478,7 +478,19 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 	public static function getAvailableLanguages($onlyKeys = false) {
 		static $langs;
 		if(!isset($langs)) {
-			$langs = Localization::getAvailableInterfaceLanguageDescriptions(Localization::activeLocale());
+			$pkg = Package::getByHandle('multilingual');
+			$activeLocale = Localization::activeLocale();
+			if (is_object($pkg)) {
+				Loader::model('multilingual_page_list', 'multilingual');
+				$multilingualSections = MultilingualSection::getList();
+				foreach ($multilingualSections as $multilingualSection) {
+					$locale = $multilingualSection->getLocale();
+					$langs[$locale] =  Localization::getLanguageDescription($locale, $activeLocale);
+				}
+			}
+			else {
+				$langs = Localization::getAvailableInterfaceLanguageDescriptions($activeLocale);
+			}
 		}
 		if($onlyKeys) {
 			$keys = array_keys($langs);
