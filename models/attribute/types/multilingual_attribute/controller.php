@@ -479,16 +479,17 @@ class MultilingualAttributeAttributeTypeController extends AttributeTypeControll
 		static $langs;
 		if(!isset($langs)) {
 			$pkg = Package::getByHandle('multilingual');
+			$activeLocale = Localization::activeLocale();
 			if (is_object($pkg)) {
 				Loader::model('multilingual_page_list', 'multilingual');
 				$multilingualSections = MultilingualSection::getList();
 				foreach ($multilingualSections as $multilingualSection) {
 					$locale = $multilingualSection->getLocale();
-					$langs[$locale] =  Localization::getLanguageDescription($locale, Localization::activeLocale());
+					$langs[$locale] =  Localization::getLanguageDescription($locale, $activeLocale);
 				}
 			}
 			else {
-				$langs = Localization::getAvailableInterfaceLanguageDescriptions(Localization::activeLocale());
+				$langs = Localization::getAvailableInterfaceLanguageDescriptions($activeLocale);
 			}
 		}
 		if($onlyKeys) {
